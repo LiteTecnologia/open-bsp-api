@@ -627,7 +627,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          key: string
+          key_encrypted: string
           name: string
           organization_id: string
           role: Database["public"]["Enums"]["role"]
@@ -636,7 +636,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
-          key: string
+          key_encrypted: string
           name: string
           organization_id: string
           role?: Database["public"]["Enums"]["role"]
@@ -645,7 +645,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
-          key?: string
+          key_encrypted?: string
           name?: string
           organization_id?: string
           role?: Database["public"]["Enums"]["role"]
@@ -1146,6 +1146,26 @@ export type Database = {
           p_status: string
         }
         Returns: boolean
+      }
+      create_api_key: {
+        Args: {
+          p_name: string
+          p_organization_id: string
+          p_plaintext: string
+          p_role: Database["public"]["Enums"]["role"]
+        }
+        Returns: {
+          created_at: string
+          id: string
+          name: string
+          organization_id: string
+          plaintext: string
+          role: Database["public"]["Enums"]["role"]
+        }[]
+      }
+      encrypt_api_key: {
+        Args: { plaintext: string }
+        Returns: string
       }
       get_authorized_orgs: {
         Args: { role?: Database["public"]["Enums"]["role"] }
