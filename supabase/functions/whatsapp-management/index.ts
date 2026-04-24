@@ -80,10 +80,13 @@ app.use("*", async (c, next) => {
 
   const client = createApiClient(c.req.raw);
 
+  // api_keys.key is encrypted at rest (bytea). RLS self-read policy matches the
+  // row whose key_encrypted = encrypt_api_key(<api-key header>), which
+  // createApiClient already forwards. So a bare select returns the one row
+  // matching this caller (or zero rows = invalid key).
   const { data: apiKey, error: apiKeyError } = await client
     .from("api_keys")
     .select()
-    .eq("key", token)
     .maybeSingle();
 
   if (apiKeyError || !apiKey) {

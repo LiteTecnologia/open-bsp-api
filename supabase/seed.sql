@@ -14,6 +14,15 @@ select vault.create_secret(
   'Service role key'
 );
 
+-- Deterministic AEAD key for api_keys encryption (local dev only).
+-- Production/staging seed this via deploy.sh from pass (see open-bsp-deploy).
+-- Value is a base64-encoded 32-byte key.
+select vault.create_secret(
+  'dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleXRlc3RrZXk=',
+  'api_key_encryption_key',
+  'Key for encrypting api_keys.key_encrypted (pgsodium det AEAD)'
+);
+
 -- ============================================================================
 -- BILLING SEED DATA (must be before org inserts for initialize_subscription trigger)
 -- ============================================================================
@@ -144,8 +153,9 @@ insert into public.agents (name, user_id, organization_id, ai, extra) values
 ;
 
 -- API Keys (for Mountain Peaks)
-insert into public.api_keys (organization_id, key, role, name) values
-  ('3a182d8d-d6d8-44bd-b021-029915476b8c', '1234567890', 'member', 'Default')
+-- key_encrypted is computed from plaintext using the vault-backed det AEAD key.
+insert into public.api_keys (organization_id, key_encrypted, role, name) values
+  ('3a182d8d-d6d8-44bd-b021-029915476b8c', public.encrypt_api_key('1234567890'), 'member', 'Default')
 ;
 
 -- Onboarding Tokens (for Mountain Peaks - created by Goat)

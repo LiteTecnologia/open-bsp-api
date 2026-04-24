@@ -3,14 +3,14 @@ create table public.api_keys (
   organization_id uuid not null,
   role public.role default 'member'::public.role not null,
   name text not null,
-  key text not null,
+  key_encrypted bytea not null,
   created_at timestamp with time zone default now() not null,
   updated_at timestamp with time zone default now() not null
 );
 
 alter table only public.api_keys
-add constraint api_keys_key_key
-unique (key);
+add constraint api_keys_key_encrypted_key
+unique (key_encrypted);
 
 alter table only public.api_keys
 add constraint api_keys_pkey
@@ -30,4 +30,4 @@ create trigger set_updated_at
 before update
 on public.api_keys
 for each row
-execute function public.moddatetime('updated_at'); 
+execute function public.moddatetime('updated_at');
